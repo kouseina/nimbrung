@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "277353577623",
+    "project_id": "chat-app-kouseina",
+    "storage_bucket": "chat-app-kouseina.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277353577623:android:b5d5a49caa897ded96bdd2",
+        "android_client_info": {
+          "package_name": "com.example.chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277353577623-bvmsapmeng31lmkq2mie6d5ukmaqtkhm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chat_app",
+            "certificate_hash": "c7fb6424682b6eb8ea17a586e4bb589bff8e5f46"
+          }
+        },
+        {
+          "client_id": "277353577623-p7c80vur14oqh5fmpbnb7aqi62d07ml4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC63Nm18ltC-NbZSmCRVWVWkF1dmQMl1pY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277353577623-p7c80vur14oqh5fmpbnb7aqi62d07ml4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
