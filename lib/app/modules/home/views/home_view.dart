@@ -11,7 +11,10 @@ import '../controllers/home_controller.dart';
 class HomeView extends GetView<HomeController> {
   var authC = Get.find<AuthController>();
 
-  Widget chat({required UsersModel friendData, required int totalUnread}) {
+  Widget chat(
+      {required UsersModel friendData,
+      required int totalUnread,
+      required String chatId}) {
     return ListTile(
       leading: CircleAvatar(
         radius: 24,
@@ -37,7 +40,13 @@ class HomeView extends GetView<HomeController> {
               label: Text('$totalUnread'),
             )
           : null,
-      onTap: () => Get.toNamed(Routes.CHAT_ROOM),
+      onTap: () => Get.toNamed(
+        Routes.CHAT_ROOM,
+        arguments: {
+          "chatId": chatId,
+          "friendEmail": friendData.email,
+        },
+      ),
     );
   }
 
@@ -89,14 +98,12 @@ class HomeView extends GetView<HomeController> {
             ),
           ),
           Expanded(
-            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: controller.chatsStream(
                   email: authC.usersModel.value.email ?? ''),
               builder: (context, snapshot1) {
                 if (snapshot1.connectionState == ConnectionState.active) {
-                  List allChats = (snapshot1.data?.data()
-                          as Map<String, dynamic>)["chats"] ??
-                      [];
+                  List allChats = snapshot1.data?.docs ?? [];
 
                   return ListView.builder(
                     padding: EdgeInsets.zero,
@@ -118,11 +125,10 @@ class HomeView extends GetView<HomeController> {
                                 friendData: friendData,
                                 totalUnread:
                                     allChats[index]["total_unread"] ?? {},
+                                chatId: allChats[index].id,
                               );
                             }
                           }
-
-                          print(snapshot2.data?.data());
 
                           return const Center(
                             child: CircularProgressIndicator(),

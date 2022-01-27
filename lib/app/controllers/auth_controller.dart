@@ -70,7 +70,40 @@ class AuthController extends GetxController {
         final currUserData =
             getUserFromFirestore.data() as Map<String, dynamic>;
 
-        usersModel(UsersModel.fromJson(currUserData));
+        usersModel(
+          UsersModel.fromJson(currUserData),
+        );
+
+        usersModel.refresh();
+
+        final listChats = await users
+            .doc(_userCredential?.user?.email)
+            .collection('chats')
+            .get();
+
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> listChatUser = <ChatUser>[];
+
+          listChats.docs.forEach((element) {
+            Map<String, dynamic> chatUserData = element.data();
+            String chatUserId = element.id;
+
+            listChatUser.add(
+              ChatUser(
+                chatId: chatUserId,
+                connection: chatUserData["connection"],
+                lastTime: chatUserData["lastTime"],
+                totalUnread: chatUserData["total_unread"],
+              ),
+            );
+          });
+
+          usersModel.update((val) {
+            val?.chats = listChatUser;
+          });
+        }
+
+        usersModel.refresh();
 
         return true;
       }
@@ -112,14 +145,6 @@ class AuthController extends GetxController {
             "lastSignInTime": _userCredential?.user?.metadata.lastSignInTime
                 ?.toIso8601String(),
           });
-
-          final currUserData =
-              getUserFromFirestore.data() as Map<String, dynamic>;
-
-          usersModel(UsersModel.fromJson(currUserData));
-
-          isAuth.value = true;
-          Get.offAllNamed(Routes.HOME);
         } else {
           await users.doc(_userCredential?.user?.email).set({
             "uid": _userCredential?.user?.uid,
@@ -135,20 +160,53 @@ class AuthController extends GetxController {
             "lastSignInTime": _userCredential?.user?.metadata.lastSignInTime
                 ?.toIso8601String(),
             "updatedTime": DateTime.now().toIso8601String(),
-            "chats": [],
           });
 
-          final getUserFromFirestore =
-              await users.doc(_userCredential?.user?.email).get();
-
-          final currUserData =
-              getUserFromFirestore.data() as Map<String, dynamic>;
-
-          usersModel(UsersModel.fromJson(currUserData));
-
-          isAuth.value = true;
-          Get.offAllNamed(Routes.HOME);
+          await users.doc(_userCredential?.user?.email).collection('chats');
         }
+
+        final getUserFromFirestoreAgain =
+            await users.doc(_userCredential?.user?.email).get();
+        final currUserData =
+            getUserFromFirestoreAgain.data() as Map<String, dynamic>;
+
+        usersModel(
+          UsersModel.fromJson(currUserData),
+        );
+
+        usersModel.refresh();
+
+        final listChats = await users
+            .doc(_userCredential?.user?.email)
+            .collection('chats')
+            .get();
+
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> listChatUser = <ChatUser>[];
+
+          listChats.docs.forEach((element) {
+            Map<String, dynamic> chatUserData = element.data();
+            String chatUserId = element.id;
+
+            listChatUser.add(
+              ChatUser(
+                chatId: chatUserId,
+                connection: chatUserData["connection"],
+                lastTime: chatUserData["lastTime"],
+                totalUnread: chatUserData["total_unread"],
+              ),
+            );
+          });
+
+          usersModel.update((val) {
+            val?.chats = listChatUser;
+          });
+        }
+
+        usersModel.refresh();
+
+        isAuth.value = true;
+        Get.offAllNamed(Routes.HOME);
       }
     } catch (err) {
       print(err);
@@ -223,21 +281,23 @@ class AuthController extends GetxController {
     String dateNow = DateTime.now().toIso8601String();
     bool flagNewConnection = false;
     var chatId;
-
     CollectionReference chats = firestore.collection('chats');
     CollectionReference users = firestore.collection('users');
 
-    final docUser = await users.doc(_currentUser?.email).get();
     final chatDocUser =
-        (docUser.data() as Map<String, dynamic>)['chats'] as List;
+        await users.doc(_currentUser?.email).collection('chats').get();
 
-    if (chatDocUser.isNotEmpty) {
-      chatDocUser.forEach((element) {
-        if (element['connection'] == friendEmail) {
-          chatId = element['chat_id'];
-        }
-      });
-      if (chatId == null) {
+    if (chatDocUser.docs.isNotEmpty) {
+      final checkConnection = await users
+          .doc(_currentUser?.email)
+          .collection('chats')
+          .where('connection', isEqualTo: friendEmail)
+          .get();
+
+      if (checkConnection.docs.isNotEmpty) {
+        flagNewConnection = false;
+        chatId = checkConnection.docs[0].id;
+      } else {
         flagNewConnection = true;
       }
     } else {
@@ -263,27 +323,42 @@ class AuthController extends GetxController {
         final chatsDataId = chatDocs.docs[0].id;
         final chatsData = chatDocs.docs[0].data() as Map<String, dynamic>;
 
-        chatDocUser.add(
-          {
-            "connection": friendEmail,
-            "chat_id": chatsDataId,
-            "lastTime": chatsData["lastTime"],
-            "total_unread": 0
-          },
-        );
-
-        await users.doc(_currentUser?.email).update({"chats": chatDocUser});
-
-        usersModel.update((val) {
-          val?.chats?.add(
-            ChatUser(
-              connection: friendEmail,
-              chatId: chatsDataId,
-              lastTime: chatsData["lastTime"],
-              totalUnread: 0,
-            ),
-          );
+        await users
+            .doc(_currentUser?.email)
+            .collection('chats')
+            .doc(chatsDataId)
+            .set({
+          "connection": friendEmail,
+          "lastTime": chatsData["lastTime"] ?? dateNow,
+          "total_unread": chatsData["total_unread"] ?? 0,
         });
+
+        final listChats = await users
+            .doc(_userCredential?.user?.email)
+            .collection('chats')
+            .get();
+
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> listChatUser = <ChatUser>[];
+
+          listChats.docs.forEach((element) {
+            Map<String, dynamic> chatUserData = element.data();
+            String chatUserId = element.id;
+
+            listChatUser.add(
+              ChatUser(
+                chatId: chatUserId,
+                connection: chatUserData["connection"],
+                lastTime: chatUserData["lastTime"],
+                totalUnread: chatUserData["total_unread"],
+              ),
+            );
+          });
+
+          usersModel.update((val) {
+            val?.chats = listChatUser;
+          });
+        }
 
         chatId = chatsDataId;
 
@@ -294,30 +369,44 @@ class AuthController extends GetxController {
             _currentUser?.email,
             friendEmail,
           ],
-          "chat": [],
         });
 
-        chatDocUser.add(
-          {
-            "connection": friendEmail,
-            "chat_id": createNewChat.id,
-            "lastTime": dateNow,
-            "total_unread": 0
-          },
-        );
-
-        await users.doc(_currentUser?.email).update({"chats": chatDocUser});
-
-        usersModel.update((val) {
-          val?.chats?.add(
-            ChatUser(
-              connection: friendEmail,
-              chatId: createNewChat.id,
-              lastTime: dateNow,
-              totalUnread: 0,
-            ),
-          );
+        await users
+            .doc(_currentUser?.email)
+            .collection('chats')
+            .doc(createNewChat.id)
+            .set({
+          "connection": friendEmail,
+          "lastTime": dateNow,
+          "total_unread": 0
         });
+
+        final listChats = await users
+            .doc(_userCredential?.user?.email)
+            .collection('chats')
+            .get();
+
+        if (listChats.docs.isNotEmpty) {
+          List<ChatUser> listChatUser = <ChatUser>[];
+
+          listChats.docs.forEach((element) {
+            Map<String, dynamic> chatUserData = element.data();
+            String chatUserId = element.id;
+
+            listChatUser.add(
+              ChatUser(
+                chatId: chatUserId,
+                connection: chatUserData["connection"],
+                lastTime: chatUserData["lastTime"],
+                totalUnread: chatUserData["total_unread"],
+              ),
+            );
+          });
+
+          usersModel.update((val) {
+            val?.chats = listChatUser;
+          });
+        }
 
         chatId = createNewChat.id;
 
@@ -325,6 +414,12 @@ class AuthController extends GetxController {
       }
     }
 
-    Get.toNamed(Routes.CHAT_ROOM, arguments: chatId);
+    Get.toNamed(
+      Routes.CHAT_ROOM,
+      arguments: {
+        "chatId": chatId,
+        "friendEmail": friendEmail,
+      },
+    );
   }
 }

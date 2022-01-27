@@ -31,31 +31,31 @@ class ChatsModel {
 
 class Chat {
   Chat({
-    this.pengirim,
-    this.penerima,
-    this.pesan,
+    this.sender,
+    this.receiver,
+    this.message,
     this.time,
     this.isRead,
   });
 
-  String? pengirim;
-  String? penerima;
-  String? pesan;
+  String? sender;
+  String? receiver;
+  String? message;
   String? time;
   bool? isRead;
 
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
-        pengirim: json["pengirim"],
-        penerima: json["penerima"],
-        pesan: json["pesan"],
+        sender: json["sender"],
+        receiver: json["receiver"],
+        message: json["message"],
         time: json["time"],
         isRead: json["isRead"],
       );
 
   Map<String, dynamic> toJson() => {
-        "pengirim": pengirim,
-        "penerima": penerima,
-        "pesan": pesan,
+        "sender": sender,
+        "receiver": receiver,
+        "message": message,
         "time": time,
         "isRead": isRead,
       };

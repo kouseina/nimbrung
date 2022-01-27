@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:chat_app/app/controllers/auth_controller.dart';
+import 'package:chat_app/app/data/models/chats_model.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +9,8 @@ import 'package:get/get.dart';
 import '../controllers/chat_room_controller.dart';
 
 class ChatRoomView extends GetView<ChatRoomController> {
+  var authC = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,16 +68,17 @@ class ChatRoomView extends GetView<ChatRoomController> {
         ),
       ),
       body: WillPopScope(
-          onWillPop: () {
-            if (controller.isShowEmoji.isTrue) {
-              controller.isShowEmoji.value = false;
-            } else {
-              Navigator.pop(context);
-            }
+        onWillPop: () {
+          if (controller.isShowEmoji.isTrue) {
+            controller.isShowEmoji.value = false;
+          } else {
+            Navigator.pop(context);
+          }
 
-            return Future.value(false);
-          },
-          child: Column(
+          return Future.value(false);
+        },
+        child: Obx(
+          () => Column(
             children: [
               Expanded(
                 child: ListView(
@@ -138,7 +143,22 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     ),
                     InkWell(
                       borderRadius: BorderRadius.circular(100),
-                      onTap: () {},
+                      onTap: () {
+                        var argument = Get.arguments;
+
+                        if (controller.chatController.value.text.isNotEmpty) {
+                          controller.sendMessage(
+                            chatId: argument["chatId"],
+                            chatModel: Chat(
+                              sender: authC.usersModel.value.email,
+                              receiver: argument["friendEmail"],
+                              isRead: false,
+                              message: controller.chatController.value.text,
+                              time: DateTime.now().toIso8601String(),
+                            ),
+                          );
+                        }
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(15),
                         child: Icon(
@@ -150,46 +170,46 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   ],
                 ),
               ),
-              Obx(
-                () => (controller.isShowEmoji.value)
-                    ? Container(
-                        height: 324,
-                        child: EmojiPicker(
-                          onEmojiSelected: (category, emoji) {
-                            controller.addEmojiToChat(emoji);
-                          },
-                          onBackspacePressed: () {
-                            controller.onBackspacePressed();
-                          },
-                          config: Config(
-                            columns: 7,
-                            emojiSizeMax: 24 *
-                                (Platform.isIOS
-                                    ? 1.30
-                                    : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
-                            verticalSpacing: 0,
-                            horizontalSpacing: 0,
-                            initCategory: Category.RECENT,
-                            bgColor: Color(0xFFF2F2F2),
-                            indicatorColor: Colors.blue,
-                            iconColor: Colors.grey,
-                            iconColorSelected: Colors.blue,
-                            progressIndicatorColor: Colors.blue,
-                            showRecentsTab: true,
-                            recentsLimit: 28,
-                            noRecentsText: "No Recents",
-                            noRecentsStyle: const TextStyle(
-                                fontSize: 20, color: Colors.black26),
-                            tabIndicatorAnimDuration: kTabScrollDuration,
-                            categoryIcons: const CategoryIcons(),
-                            buttonMode: ButtonMode.MATERIAL,
-                          ),
+              (controller.isShowEmoji.value)
+                  ? Container(
+                      height: 324,
+                      child: EmojiPicker(
+                        onEmojiSelected: (category, emoji) {
+                          controller.addEmojiToChat(emoji);
+                        },
+                        onBackspacePressed: () {
+                          controller.onBackspacePressed();
+                        },
+                        config: Config(
+                          columns: 7,
+                          emojiSizeMax: 24 *
+                              (Platform.isIOS
+                                  ? 1.30
+                                  : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
+                          verticalSpacing: 0,
+                          horizontalSpacing: 0,
+                          initCategory: Category.RECENT,
+                          bgColor: Color(0xFFF2F2F2),
+                          indicatorColor: Colors.blue,
+                          iconColor: Colors.grey,
+                          iconColorSelected: Colors.blue,
+                          progressIndicatorColor: Colors.blue,
+                          showRecentsTab: true,
+                          recentsLimit: 28,
+                          noRecentsText: "No Recents",
+                          noRecentsStyle: const TextStyle(
+                              fontSize: 20, color: Colors.black26),
+                          tabIndicatorAnimDuration: kTabScrollDuration,
+                          categoryIcons: const CategoryIcons(),
+                          buttonMode: ButtonMode.MATERIAL,
                         ),
-                      )
-                    : SizedBox(),
-              ),
+                      ),
+                    )
+                  : SizedBox(),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
