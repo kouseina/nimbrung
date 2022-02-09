@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/data/models/chats_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -81,19 +83,35 @@ class ChatRoomView extends GetView<ChatRoomController> {
           () => Column(
             children: [
               Expanded(
-                child: ListView(
-                  children: [
-                    ItemChatWidget(
-                      text:
-                          'Selamat Pagi ksakwkdkskadkwkadk skakdksakdksakdk ksdk kadks jdjskadj jjskadj jksk ajk',
-                      time: '19.00',
-                    ),
-                    ItemChatWidget(
-                      text: 'Selamat Pagi juga',
-                      time: '19.09',
-                      isSender: false,
-                    ),
-                  ],
+                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: controller.streamChats(
+                    chatId: Get.arguments["chatId"],
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.active) {
+                      final allData = snapshot.data?.docs ?? [];
+
+                      Timer(
+                        Duration.zero,
+                        () => controller.scrollController.value.jumpTo(
+                            controller.scrollController.value.position
+                                .maxScrollExtent),
+                      );
+
+                      return ListView.builder(
+                        controller: controller.scrollController.value,
+                        itemCount: allData.length,
+                        itemBuilder: (context, index) => ItemChatWidget(
+                          text: '${allData[index]["message"]}',
+                          time: '${allData[index]["time"]}',
+                          isSender: '${allData[index]["sender"]}' ==
+                              authC.usersModel.value.email,
+                        ),
+                      );
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  },
                 ),
               ),
               Container(

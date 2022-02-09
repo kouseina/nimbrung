@@ -40,12 +40,10 @@ class HomeView extends GetView<HomeController> {
               label: Text('$totalUnread'),
             )
           : null,
-      onTap: () => Get.toNamed(
-        Routes.CHAT_ROOM,
-        arguments: {
-          "chatId": chatId,
-          "friendEmail": friendData.email,
-        },
+      onTap: () => controller.navigateToRoomChat(
+        chatId: chatId,
+        email: authC.usersModel.value.email ?? "",
+        friendEmail: friendData.email ?? "",
       ),
     );
   }
