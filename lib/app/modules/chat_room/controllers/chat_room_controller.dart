@@ -34,7 +34,14 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> streamChats({required chatId}) {
+  Stream<DocumentSnapshot<Object?>> streamFriend({required String friendEmail}) {
+    CollectionReference users = firestore.collection("users");
+
+    return users.doc(friendEmail).snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> streamChats(
+      {required String chatId}) {
     CollectionReference chats = firestore.collection("chats");
 
     return chats

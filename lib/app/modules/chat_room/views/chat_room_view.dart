@@ -13,6 +13,50 @@ import '../controllers/chat_room_controller.dart';
 class ChatRoomView extends GetView<ChatRoomController> {
   var authC = Get.find<AuthController>();
 
+  Widget _titleAppbar({String? avatarPath, String? name, String? status}) {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 22,
+          backgroundColor: Colors.black26,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: (avatarPath?.isNotEmpty ?? false)
+                ? Image.network(avatarPath ?? '')
+                : Image.asset(
+                    'assets/logo/noimage.png',
+                    fit: BoxFit.cover,
+                  ),
+          ),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              (name?.isNotEmpty ?? false) ? name ?? '' : 'Loading...',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey.shade800,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              (status?.isNotEmpty ?? false) ? status ?? '' : 'Loading...',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade500,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,52 +65,30 @@ class ChatRoomView extends GetView<ChatRoomController> {
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              onPressed: () => Get.back(),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.grey.shade800,
+              elevation: 0,
+              backgroundColor: Colors.white,
+              leading: IconButton(
+                onPressed: () => Get.back(),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.grey.shade800,
+                ),
               ),
-            ),
-            title: Row(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: Colors.black26,
-                  child: Image.asset(
-                    'assets/logo/noimage.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Lorem Ipsum',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey.shade800,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      'Statusnya si lorem ipsum',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade500,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+              title: StreamBuilder<DocumentSnapshot<Object?>>(
+                stream: controller.streamFriend(
+                    friendEmail: Get.arguments["friendEmail"]),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    Map data = snapshot.data?.data() as Map;
+                    return _titleAppbar(
+                      avatarPath: data["photoUrl"],
+                      name: data["name"],
+                      status: data["status"],
+                    );
+                  }
+                  return _titleAppbar();
+                },
+              )),
         ),
       ),
       body: WillPopScope(
