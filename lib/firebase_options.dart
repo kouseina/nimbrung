@@ -58,20 +58,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC63Nm18ltC-NbZSmCRVWVWkF1dmQMl1pY',
-    appId: '1:277353577623:android:b5d5a49caa897ded96bdd2',
+    appId: '1:277353577623:android:c596f016a5fe644096bdd2',
     messagingSenderId: '277353577623',
     projectId: 'chat-app-kouseina',
     storageBucket: 'chat-app-kouseina.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBPjCKgaIjEYE2VHZ-GoyRwyaZDrKkKAH4',
-    appId: '1:277353577623:ios:89ca9d65881c90d996bdd2',
+    apiKey: 'AIzaSyB5ULuFT-M2O6Ee-kFNLt6La_I4iK8L-oY',
+    appId: '1:277353577623:ios:e5483ea2cd32b5e896bdd2',
     messagingSenderId: '277353577623',
     projectId: 'chat-app-kouseina',
     storageBucket: 'chat-app-kouseina.appspot.com',
     androidClientId: '277353577623-bvmsapmeng31lmkq2mie6d5ukmaqtkhm.apps.googleusercontent.com',
-    iosClientId: '277353577623-qdigs5pfvu07n92kepb2ivlqssdqe4pj.apps.googleusercontent.com',
-    iosBundleId: 'com.example.chatApp',
+    iosClientId: '277353577623-0goojvmcj0bgd98q0g5l14b6ugh7m33g.apps.googleusercontent.com',
+    iosBundleId: 'com.kouseina.nimbrung',
   );
 }
