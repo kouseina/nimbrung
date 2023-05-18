@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../controllers/chat_room_controller.dart';
 
@@ -29,7 +30,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Column(
@@ -61,7 +62,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(75),
+        preferredSize: const Size.fromHeight(75),
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: AppBar(
@@ -123,16 +124,51 @@ class ChatRoomView extends GetView<ChatRoomController> {
                       return ListView.builder(
                         controller: controller.scrollController.value,
                         itemCount: allData.length,
-                        itemBuilder: (context, index) => ItemChatWidget(
-                          text: '${allData[index]["message"]}',
-                          time: '${allData[index]["time"]}',
-                          isSender: '${allData[index]["sender"]}' ==
-                              authC.usersModel.value.email,
-                        ),
+                        itemBuilder: (context, index) {
+                          var data = allData[index];
+
+                          Widget _item({
+                            String? groupTime,
+                          }) {
+                            return Column(
+                              children: [
+                                if (groupTime != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 16,
+                                      bottom: 8,
+                                    ),
+                                    child: Text(
+                                      groupTime,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ItemChatWidget(
+                                  text: '${data["message"]}',
+                                  time: '${data["time"]}',
+                                  isSender: '${data["sender"]}' ==
+                                      authC.usersModel.value.email,
+                                ),
+                              ],
+                            );
+                          }
+
+                          if (index == 0) {
+                            return _item(groupTime: data['groupTime']);
+                          }
+
+                          if (allData[index]['groupTime'] !=
+                              allData[index - 1]['groupTime']) {
+                            return _item(groupTime: data['groupTime']);
+                          }
+
+                          return _item();
+                        },
                       );
                     }
 
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   },
                 ),
               ),
@@ -186,6 +222,8 @@ class ChatRoomView extends GetView<ChatRoomController> {
                       onTap: () {
                         var argument = Get.arguments;
 
+                        var date = DateTime.now().toIso8601String();
+
                         if (controller.chatController.value.text.isNotEmpty) {
                           controller.sendMessage(
                             chatId: argument["chatId"],
@@ -194,7 +232,10 @@ class ChatRoomView extends GetView<ChatRoomController> {
                               receiver: argument["friendEmail"],
                               isRead: false,
                               message: controller.chatController.value.text,
-                              time: DateTime.now().toIso8601String(),
+                              time: date,
+                              groupTime: DateFormat.yMMMMd('en_US').format(
+                                DateTime.tryParse(date) ?? DateTime.now(),
+                              ),
                             ),
                           );
                         }
@@ -229,7 +270,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           verticalSpacing: 0,
                           horizontalSpacing: 0,
                           initCategory: Category.RECENT,
-                          bgColor: Color(0xFFF2F2F2),
+                          bgColor: const Color(0xFFF2F2F2),
                           indicatorColor: Colors.blue,
                           iconColor: Colors.grey,
                           iconColorSelected: Colors.blue,
@@ -245,7 +286,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                         ),
                       ),
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
             ],
           ),
         ),
@@ -268,6 +309,11 @@ class ItemChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat _formatter = DateFormat('Hm');
+    final String dateFormated = _formatter.format(
+      DateTime.tryParse(time) ?? DateTime.now(),
+    );
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
@@ -284,11 +330,14 @@ class ItemChatWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSender ? Colors.blue.shade600 : Colors.grey.shade200,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-                bottomLeft: isSender ? Radius.circular(10) : Radius.circular(0),
-                bottomRight:
-                    isSender ? Radius.circular(0) : Radius.circular(10),
+                topLeft: const Radius.circular(10),
+                topRight: const Radius.circular(10),
+                bottomLeft: isSender
+                    ? const Radius.circular(10)
+                    : const Radius.circular(0),
+                bottomRight: isSender
+                    ? const Radius.circular(0)
+                    : const Radius.circular(10),
               ),
             ),
             child: Text(
@@ -299,10 +348,10 @@ class ItemChatWidget extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
-          Text(time),
+          Text(dateFormated),
         ],
       ),
     );

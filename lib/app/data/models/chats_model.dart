@@ -36,6 +36,7 @@ class Chat {
     this.message,
     this.time,
     this.isRead,
+    this.groupTime,
   });
 
   String? sender;
@@ -43,6 +44,7 @@ class Chat {
   String? message;
   String? time;
   bool? isRead;
+  String? groupTime;
 
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
         sender: json["sender"],
@@ -50,6 +52,7 @@ class Chat {
         message: json["message"],
         time: json["time"],
         isRead: json["isRead"],
+        groupTime: json["groupTime"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -58,5 +61,6 @@ class Chat {
         "message": message,
         "time": time,
         "isRead": isRead,
+        "groupTime": groupTime,
       };
 }
