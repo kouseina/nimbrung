@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +11,104 @@ import '../controllers/update_profile_controller.dart';
 class UpdateProfileView extends GetView<UpdateProfileController> {
   var authC = Get.find<AuthController>();
 
+  Widget _avatar() {
+    return GetBuilder<UpdateProfileController>(
+      init: UpdateProfileController(),
+      initState: (_) {},
+      builder: (_controller) {
+        return Center(
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  controller.selectAvatar();
+                },
+                child: Stack(
+                  children: [
+                    AvatarGlow(
+                      endRadius: 110,
+                      glowColor: Colors.black12,
+                      duration: const Duration(seconds: 2),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(200),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.black26,
+                          child: Stack(
+                            children: [
+                              if (controller.avatarImage != null)
+                                Image.file(
+                                  File(controller.avatarImage!.path),
+                                )
+                              else if (authC.usersModel.value.photoUrl != "")
+                                Image.network(
+                                  "${authC.usersModel.value.photoUrl}",
+                                  fit: BoxFit.cover,
+                                  height: 1000,
+                                )
+                              else
+                                Image.asset(
+                                  'assets/logo/noimage.png',
+                                  fit: BoxFit.cover,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 35,
+                      right: 35,
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (controller.avatarImage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          controller.removeAvatar();
+                        },
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.red.shade400,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 32,
+                      ),
+                      Icon(
+                        Icons.check,
+                        color: Colors.green.shade500,
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    controller.emailController.value.text = authC.usersModel.value.email ?? '';
-    controller.nameController.value.text = authC.usersModel.value.name ?? '';
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -43,37 +138,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             Expanded(
               child: ListView(
                 children: [
-                  AvatarGlow(
-                    endRadius: 110,
-                    glowColor: Colors.black12,
-                    duration: Duration(seconds: 2),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(200),
-                      child: InkWell(
-                        onTap: () {
-                          print(authC.usersModel.value.photoUrl);
-                        },
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundColor: Colors.black26,
-                          child: (authC.usersModel.value.photoUrl != "")
-                              ? Image.network(
-                                  "${authC.usersModel.value.photoUrl}",
-                                  fit: BoxFit.cover,
-                                  height: 1000,
-                                )
-                              : Image.asset(
-                                  'assets/logo/noimage.png',
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _avatar(),
                   const SizedBox(
                     height: 25,
                   ),
-                  Text(
+                  const Text(
                     'Email',
                     style: TextStyle(
                       fontSize: 16,
@@ -85,7 +154,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     height: 10,
                   ),
                   TextField(
-                    controller: controller.emailController.value,
+                    controller: controller.emailController,
                     readOnly: true,
                     decoration: InputDecoration(
                       filled: true,
@@ -99,7 +168,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   const SizedBox(
                     height: 15,
                   ),
-                  Text(
+                  const Text(
                     'Nama',
                     style: TextStyle(
                       fontSize: 16,
@@ -111,7 +180,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                     height: 10,
                   ),
                   TextField(
-                    controller: controller.nameController.value,
+                    controller: controller.nameController,
                     decoration: InputDecoration(
                       isDense: true,
                       border: OutlineInputBorder(
@@ -127,7 +196,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
               width: Get.width,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   elevation: 0,
                 ),
                 onPressed: () {
