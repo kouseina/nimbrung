@@ -47,6 +47,8 @@ dependencies:
   rename: ^2.1.1
   intl: ^0.17.0
   image_picker: ^0.8.7+5
+  flutter_image_compress: ^2.0.0
+  path_provider: ^2.0.15
 
 dev_dependencies:
   flutter_test:

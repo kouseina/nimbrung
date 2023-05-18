@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:chat_app/app/controllers/auth_controller.dart';
+import 'package:chat_app/app/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,11 +19,16 @@ class UpdateProfileController extends GetxController {
       final XFile? image =
           await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (image != null) {
-        print('avatar path : ${image.path}');
-        print('avatar name : ${image.name}');
-        avatarImage = image;
-      }
+      if (image == null) throw 'error image is null';
+
+      print('avatar path : ${image.path}');
+      print('avatar name : ${image.name}');
+
+      final imageCompressed = await ImageUtils().compress(File(image.path));
+
+      if (imageCompressed == null) throw 'error image compressed is null';
+
+      avatarImage = imageCompressed;
     } catch (e) {}
     update();
   }
