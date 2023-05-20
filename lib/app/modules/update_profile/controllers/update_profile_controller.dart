@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app/app/controllers/auth_controller.dart';
+import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:chat_app/app/utils/image_utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ class UpdateProfileController extends GetxController {
 
   void uploadAvatar() async {
     if (avatarImage == null) return;
+    if (avatarProgress != null) return;
 
     // Points to "images"
     Reference? imagesRef = authC.storage.ref().child("images");
@@ -87,12 +89,16 @@ class UpdateProfileController extends GetxController {
             avatarProgress = null;
             authC.updatePhotoProfile(url: await spaceRef.getDownloadURL());
             avatarImage = null;
+            DialogUtils().toast('Sukses mengubah foto profil');
+
             update();
             break;
         }
       });
     } on FirebaseException catch (e) {
       // ...
+
+      debugPrint('Upload Image Error : $e');
     }
   }
 

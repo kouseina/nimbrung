@@ -1,5 +1,6 @@
 import 'package:chat_app/app/data/models/users_model.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
+import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -209,6 +210,7 @@ class AuthController extends GetxController {
         usersModel.refresh();
 
         isAuth.value = true;
+        DialogUtils().toast('Berhasil masuk!');
         Get.offAllNamed(Routes.HOME);
       }
     } catch (err) {
