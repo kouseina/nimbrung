@@ -28,7 +28,7 @@ class SearchController extends GetxController {
             initialQuery.add(userQuery.docs[i].data() as Map<String, dynamic>);
           }
         } else {
-          print('Tidak ada data');
+          debugPrint('Tidak ada data');
         }
       }
 

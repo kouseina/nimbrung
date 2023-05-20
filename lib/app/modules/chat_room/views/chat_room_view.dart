@@ -274,12 +274,13 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           indicatorColor: Colors.blue,
                           iconColor: Colors.grey,
                           iconColorSelected: Colors.blue,
-                          progressIndicatorColor: Colors.blue,
                           showRecentsTab: true,
                           recentsLimit: 28,
-                          noRecentsText: "No Recents",
-                          noRecentsStyle: const TextStyle(
-                              fontSize: 20, color: Colors.black26),
+                          noRecents: const Text(
+                            "No Recents",
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.black26),
+                          ),
                           tabIndicatorAnimDuration: kTabScrollDuration,
                           categoryIcons: const CategoryIcons(),
                           buttonMode: ButtonMode.MATERIAL,

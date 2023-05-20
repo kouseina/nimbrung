@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,8 +23,8 @@ class ImageUtils {
 
     final int compressedFileSize = await result?.length() ?? 0;
 
-    print(file.lengthSync());
-    print(compressedFileSize);
+    debugPrint(file.lengthSync().toString());
+    debugPrint(compressedFileSize.toString());
 
     return result;
   }

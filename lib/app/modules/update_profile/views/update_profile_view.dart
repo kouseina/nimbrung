@@ -41,10 +41,12 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                   File(controller.avatarImage!.path),
                                 )
                               else if (authC.usersModel.value.photoUrl != "")
-                                Image.network(
-                                  "${authC.usersModel.value.photoUrl}",
-                                  fit: BoxFit.cover,
-                                  height: 1000,
+                                Obx(
+                                  () => Image.network(
+                                    "${authC.usersModel.value.photoUrl}",
+                                    fit: BoxFit.cover,
+                                    height: 1000,
+                                  ),
                                 )
                               else
                                 Image.asset(
@@ -93,9 +95,14 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                       const SizedBox(
                         width: 32,
                       ),
-                      Icon(
-                        Icons.check,
-                        color: Colors.green.shade500,
+                      GestureDetector(
+                        onTap: () {
+                          controller.uploadAvatar();
+                        },
+                        child: Icon(
+                          Icons.check,
+                          color: Colors.green.shade500,
+                        ),
                       ),
                     ],
                   ),

@@ -7,25 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:277353577623:android:b5d5a49caa897ded96bdd2",
+        "mobilesdk_app_id": "1:277353577623:android:c596f016a5fe644096bdd2",
         "android_client_info": {
-          "package_name": "com.example.chat_app"
+          "package_name": "com.kouseina.nimbrung"
         }
       },
       "oauth_client": [
         {
-          "client_id": "277353577623-bvmsapmeng31lmkq2mie6d5ukmaqtkhm.apps.googleusercontent.com",
+          "client_id": "277353577623-4dcjskdm4j64h26l1t435iec73qilt3m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.chat_app",
-            "certificate_hash": "c7fb6424682b6eb8ea17a586e4bb589bff8e5f46"
-          }
-        },
-        {
-          "client_id": "277353577623-i55pc1god9ihhlt2i093rktj38mmoh3i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.chat_app",
+            "package_name": "com.kouseina.nimbrung",
             "certificate_hash": "30c7303b7746f21a00705e6f6d41770d6b56e2b4"
           }
         },
@@ -35,48 +27,6 @@
         }
       ],
       "api_key": [
-        {
-          "current_key": "AIzaSyC63Nm18ltC-NbZSmCRVWVWkF1dmQMl1pY"
-        },
-        {
-          "current_key": "AIzaSyCV4dAL8bfu8aNyQJcyzfvvjsYiJRbnQBE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "277353577623-p7c80vur14oqh5fmpbnb7aqi62d07ml4.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "277353577623-0goojvmcj0bgd98q0g5l14b6ugh7m33g.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kouseina.nimbrung"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:277353577623:android:c596f016a5fe644096bdd2",
-        "android_client_info": {
-          "package_name": "com.kouseina.nimbrung"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "277353577623-p7c80vur14oqh5fmpbnb7aqi62d07ml4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC63Nm18ltC-NbZSmCRVWVWkF1dmQMl1pY"
-        },
         {
           "current_key": "AIzaSyCV4dAL8bfu8aNyQJcyzfvvjsYiJRbnQBE"
         }

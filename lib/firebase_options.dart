@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC63Nm18ltC-NbZSmCRVWVWkF1dmQMl1pY',
+    apiKey: 'AIzaSyCV4dAL8bfu8aNyQJcyzfvvjsYiJRbnQBE',
     appId: '1:277353577623:android:c596f016a5fe644096bdd2',
     messagingSenderId: '277353577623',
     projectId: 'chat-app-kouseina',
@@ -70,7 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '277353577623',
     projectId: 'chat-app-kouseina',
     storageBucket: 'chat-app-kouseina.appspot.com',
-    androidClientId: '277353577623-bvmsapmeng31lmkq2mie6d5ukmaqtkhm.apps.googleusercontent.com',
+    androidClientId: '277353577623-4dcjskdm4j64h26l1t435iec73qilt3m.apps.googleusercontent.com',
     iosClientId: '277353577623-0goojvmcj0bgd98q0g5l14b6ugh7m33g.apps.googleusercontent.com',
     iosBundleId: 'com.kouseina.nimbrung',
   );

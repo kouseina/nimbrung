@@ -2,6 +2,8 @@ import 'package:chat_app/app/data/models/users_model.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -16,6 +18,7 @@ class AuthController extends GetxController {
   GoogleSignInAccount? _currentUser;
   UserCredential? _userCredential;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseStorage storage = FirebaseStorage.instance;
   var usersModel = UsersModel().obs;
 
   Future<void> firstInitialized() async {
@@ -209,7 +212,7 @@ class AuthController extends GetxController {
         Get.offAllNamed(Routes.HOME);
       }
     } catch (err) {
-      print(err);
+      debugPrint(err.toString());
     }
   }
 
@@ -247,6 +250,26 @@ class AuthController extends GetxController {
       usersModel.refresh();
 
       Get.back();
+    });
+  }
+
+  Future<void> updatePhotoProfile({
+    required String url,
+  }) async {
+    // Update Firebase
+    CollectionReference users = firestore.collection('users');
+
+    await users.doc(_userCredential?.user?.email).update({
+      "photoUrl": url,
+      "updatedTime": DateTime.now().toIso8601String(),
+    }).then((value) {
+      // Update UserModel
+      usersModel.update((val) {
+        val?.photoUrl = url;
+        val?.updatedTime = DateTime.now().toIso8601String();
+      });
+
+      usersModel.refresh();
     });
   }
 
