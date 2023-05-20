@@ -13,7 +13,10 @@ class UpdateProfileController extends GetxController {
   late TextEditingController emailController;
   late TextEditingController nameController;
   late ImagePicker imagePicker = ImagePicker();
+
   XFile? avatarImage;
+  bool avatarCompressLoad = false;
+  double? avatarProgress;
 
   void selectAvatar() async {
     try {
@@ -25,7 +28,13 @@ class UpdateProfileController extends GetxController {
       debugPrint('avatar path : ${image.path}');
       debugPrint('avatar name : ${image.name}');
 
-      final imageCompressed = await ImageUtils().compress(File(image.path));
+      final imageCompressed = await ImageUtils().compress(
+        File(image.path),
+        onLoading: (load) {
+          avatarCompressLoad = load;
+          update();
+        },
+      );
 
       if (imageCompressed == null) throw 'error image compressed is null';
 
@@ -57,9 +66,11 @@ class UpdateProfileController extends GetxController {
       uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) async {
         switch (taskSnapshot.state) {
           case TaskState.running:
-            final progress = 100.0 *
-                (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-            debugPrint("Upload is $progress% complete.");
+            final progress =
+                taskSnapshot.bytesTransferred / taskSnapshot.totalBytes;
+            avatarProgress = progress;
+            debugPrint("Upload is ${100 * progress}% complete.");
+            update();
             break;
           case TaskState.paused:
             debugPrint("Upload is paused.");
@@ -73,6 +84,7 @@ class UpdateProfileController extends GetxController {
           case TaskState.success:
             // Handle successful uploads on complete
             // ...
+            avatarProgress = null;
             authC.updatePhotoProfile(url: await spaceRef.getDownloadURL());
             avatarImage = null;
             update();

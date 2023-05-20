@@ -5,27 +5,38 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ImageUtils {
-  Future<XFile?> compress(File file) async {
-    final dir = await getTemporaryDirectory();
-    String fileName = file.path.split('/').last;
+  Future<XFile?> compress(File file, {Function(bool)? onLoading}) async {
+    if (onLoading != null) onLoading(true);
 
-    final targetPath = dir.absolute.path + '/$fileName';
+    try {
+      final dir = await getTemporaryDirectory();
+      String fileName = file.path.split('/').last;
 
-    XFile? result;
-    const int maxFileSize = 250000;
-    int quality = 10;
+      final targetPath = dir.absolute.path + '/$fileName';
 
-    result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: quality,
-    );
+      XFile? result;
+      // const int maxFileSize = 250000;
+      int quality = 10;
 
-    final int compressedFileSize = await result?.length() ?? 0;
+      result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: quality,
+      );
 
-    debugPrint(file.lengthSync().toString());
-    debugPrint(compressedFileSize.toString());
+      final int compressedFileSize = await result?.length() ?? 0;
 
-    return result;
+      debugPrint(file.lengthSync().toString());
+      debugPrint(compressedFileSize.toString());
+
+      if (onLoading != null) onLoading(false);
+
+      return result;
+    } catch (e) {
+      debugPrint('Image Compress Error : $e');
+      if (onLoading != null) onLoading(false);
+
+      return null;
+    }
   }
 }

@@ -35,6 +35,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           radius: 80,
                           backgroundColor: Colors.black26,
                           child: Stack(
+                            alignment: AlignmentDirectional.center,
                             children: [
                               if (controller.avatarImage != null)
                                 Image.file(
@@ -52,6 +53,16 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                 Image.asset(
                                   'assets/logo/noimage.png',
                                   fit: BoxFit.cover,
+                                ),
+                              if (controller.avatarCompressLoad)
+                                const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              if (controller.avatarProgress != null)
+                                Center(
+                                  child: CircularProgressIndicator(
+                                    value: controller.avatarProgress,
+                                  ),
                                 ),
                             ],
                           ),
