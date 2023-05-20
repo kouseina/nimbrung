@@ -89,7 +89,7 @@ class UpdateProfileController extends GetxController {
             avatarProgress = null;
             authC.updatePhotoProfile(url: await spaceRef.getDownloadURL());
             avatarImage = null;
-            DialogUtils().toast('Sukses mengubah foto profil');
+            DialogUtils.toast('Sukses mengubah foto profil');
 
             update();
             break;
