@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../controllers/search_controller.dart';
+import '../controllers/search_controller.dart' as searchController;
 
-class SearchView extends GetView<SearchController> {
+class SearchView extends GetView<searchController.SearchController> {
   var authC = Get.find<AuthController>();
 
   @override
