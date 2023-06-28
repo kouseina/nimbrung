@@ -112,7 +112,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.active) {
-                      final allData = snapshot.data?.docs ?? [];
+                      final allData = (snapshot.data?.docs ?? [])
+                          .map((e) => ChatModel.fromJson(e.data()))
+                          .toList();
 
                       Timer(
                         Duration.zero,
@@ -125,45 +127,51 @@ class ChatRoomView extends GetView<ChatRoomController> {
                         controller: controller.scrollController.value,
                         itemCount: allData.length,
                         itemBuilder: (context, index) {
-                          var data = allData[index];
-
-                          Widget _item({
-                            String? groupTime,
+                          Widget item({
+                            required ChatModel chatModel,
                           }) {
+                            bool isShowGroupTime() {
+                              if (chatModel.groupTime == null) return false;
+
+                              if (index == 0) return true;
+
+                              if (allData[index].groupTime !=
+                                  allData[index - 1].groupTime) return true;
+
+                              return false;
+                            }
+
                             return Column(
                               children: [
-                                if (groupTime != null)
+                                if (isShowGroupTime())
                                   Padding(
                                     padding: const EdgeInsets.only(
                                       top: 16,
                                       bottom: 8,
                                     ),
                                     child: Text(
-                                      groupTime,
+                                      chatModel.groupTime ?? '',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700),
                                     ),
                                   ),
                                 ItemChatWidget(
-                                  text: '${data["message"]}',
-                                  time: '${data["time"]}',
-                                  isSender: '${data["sender"]}' ==
+                                  text: chatModel.message ?? '',
+                                  time: chatModel.time ?? '',
+                                  isSender: chatModel.sender ==
                                       authC.usersModel.value.email,
                                 ),
                               ],
                             );
                           }
 
-                          if (index == 0) {
-                            return _item(groupTime: data['groupTime']);
-                          }
+                          try {
+                            var data = allData[index];
 
-                          if (allData[index]['groupTime'] !=
-                              allData[index - 1]['groupTime']) {
-                            return _item(groupTime: data['groupTime']);
+                            return item(chatModel: data);
+                          } catch (e) {
+                            return const SizedBox();
                           }
-
-                          return _item();
                         },
                       );
                     }
@@ -227,7 +235,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                         if (controller.chatController.value.text.isNotEmpty) {
                           controller.sendMessage(
                             chatId: argument["chatId"],
-                            chatModel: Chat(
+                            chatModel: ChatModel(
                               sender: authC.usersModel.value.email,
                               receiver: argument["friendEmail"],
                               isRead: false,

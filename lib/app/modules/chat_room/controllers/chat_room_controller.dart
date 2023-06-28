@@ -52,7 +52,7 @@ class ChatRoomController extends GetxController {
   }
 
   Future<void> sendMessage(
-      {required String chatId, required Chat chatModel}) async {
+      {required String chatId, required ChatModel chatModel}) async {
     if (chatController.value.text.isNotEmpty) {
       chatController.value.text = "";
       String dateNow = DateTime.now().toIso8601String();

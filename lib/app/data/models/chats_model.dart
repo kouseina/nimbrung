@@ -16,11 +16,11 @@ class ChatsModel {
   });
 
   List<String>? connections;
-  List<Chat>? chat;
+  List<ChatModel>? chat;
 
   factory ChatsModel.fromJson(Map<String, dynamic> json) => ChatsModel(
         connections: List<String>.from(json["connections"].map((x) => x)),
-        chat: List<Chat>.from(json["chat"].map((x) => Chat.fromJson(x))),
+        chat: List<ChatModel>.from(json["chat"].map((x) => ChatModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,8 +29,8 @@ class ChatsModel {
       };
 }
 
-class Chat {
-  Chat({
+class ChatModel {
+  ChatModel({
     this.sender,
     this.receiver,
     this.message,
@@ -46,7 +46,7 @@ class Chat {
   bool? isRead;
   String? groupTime;
 
-  factory Chat.fromJson(Map<String, dynamic> json) => Chat(
+  factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
         sender: json["sender"],
         receiver: json["receiver"],
         message: json["message"],
