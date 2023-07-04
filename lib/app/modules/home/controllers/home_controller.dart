@@ -1,9 +1,47 @@
+import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
+import 'package:chat_app/app/utils/enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
+class HomeController extends FullLifeCycleController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    var authController = Get.find<AuthController>();
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.inactive) {
+      await firestore
+          .collection('users')
+          .doc(authController.usersModel.value.email)
+          .update({
+        'lastOnline': DateTime.now().toIso8601String(),
+        'onlineStatus': 0,
+      });
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      await firestore
+          .collection('users')
+          .doc(authController.usersModel.value.email)
+          .update({
+        'onlineStatus': 1,
+      });
+    }
+  }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> chatsStream(
       {required String email}) {

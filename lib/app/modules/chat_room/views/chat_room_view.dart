@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/data/models/chats_model.dart';
+import 'package:chat_app/app/data/models/users_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,25 @@ import '../controllers/chat_room_controller.dart';
 class ChatRoomView extends GetView<ChatRoomController> {
   var authC = Get.find<AuthController>();
 
-  Widget _titleAppbar({String? avatarPath, String? name, String? status}) {
+  Widget _titleAppbar({
+    String? avatarPath,
+    String? name,
+    int? onlineStatus,
+    String? lastOnline,
+  }) {
+    String getOnlineStatus() {
+      final DateFormat _formatter = DateFormat('Hm');
+      final String lastOnlineFormatted = _formatter.format(
+        DateTime.tryParse(lastOnline ?? '') ?? DateTime.now(),
+      );
+
+      if (onlineStatus == 1) {
+        return 'Online';
+      }
+
+      return lastOnlineFormatted;
+    }
+
     return Row(
       children: [
         CircleAvatar(
@@ -44,10 +63,13 @@ class ChatRoomView extends GetView<ChatRoomController> {
                 fontWeight: FontWeight.w600,
               ),
             ),
+            SizedBox(
+              height: 4,
+            ),
             Text(
-              (status?.isNotEmpty ?? false) ? status ?? '' : 'Loading...',
+              getOnlineStatus(),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: Colors.grey.shade500,
                 fontWeight: FontWeight.normal,
               ),
@@ -80,13 +102,20 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     friendEmail: Get.arguments["friendEmail"]),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
-                    Map data = snapshot.data?.data() as Map;
-                    return _titleAppbar(
-                      avatarPath: data["photoUrl"],
-                      name: data["name"],
-                      status: data["status"],
-                    );
+                    var data = snapshot.data?.data() as Map<String, dynamic>;
+
+                    try {
+                      var dataModel = UsersModel.fromJson(data);
+
+                      return _titleAppbar(
+                        avatarPath: dataModel.photoUrl,
+                        name: dataModel.name,
+                        onlineStatus: dataModel.onlineStatus,
+                        lastOnline: dataModel.lastOnline,
+                      );
+                    } catch (e) {}
                   }
+
                   return _titleAppbar();
                 },
               )),
