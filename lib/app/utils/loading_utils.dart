@@ -1,6 +1,5 @@
 import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class LoadingUtils {
   static Future<dynamic> fullScreen() async {

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/data/models/chats_model.dart';
 import 'package:chat_app/app/data/models/users_model.dart';
+import 'package:chat_app/app/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -24,16 +25,11 @@ class ChatRoomView extends GetView<ChatRoomController> {
     String? lastOnline,
   }) {
     String getOnlineStatus() {
-      final DateFormat _formatter = DateFormat('Hm');
-      final String lastOnlineFormatted = _formatter.format(
-        DateTime.tryParse(lastOnline ?? '') ?? DateTime.now(),
-      );
-
       if (onlineStatus == 1) {
         return 'Online';
       }
 
-      return lastOnlineFormatted;
+      return "Terakhir dilihat ${Utils().dateCustomFormat(lastOnline ?? '')}";
     }
 
     return Row(
@@ -349,8 +345,7 @@ class ItemChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat _formatter = DateFormat('Hm');
-    final String dateFormated = _formatter.format(
+    final String dateFormated = DateFormat.Hm().format(
       DateTime.tryParse(time) ?? DateTime.now(),
     );
 
