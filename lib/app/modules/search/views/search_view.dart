@@ -70,35 +70,36 @@ class SearchView extends GetView<search_controller.SearchController> {
             : ListView.builder(
                 padding: const EdgeInsets.only(top: 10),
                 itemCount: controller.tempQuery.length,
-                itemBuilder: (context, index) => ListTile(
-                  leading: CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Colors.black26,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: controller.tempQuery[index]["PhotoUrl"] != ""
-                          ? Image.network(
-                              "${controller.tempQuery[index]["photoUrl"]}",
-                              fit: BoxFit.cover,
-                              height: 100,
-                            )
-                          : Image.asset(
-                              'assets/logo/noimage.png',
-                              fit: BoxFit.cover,
-                            ),
+                itemBuilder: (context, index) {
+                  var data = controller.tempQuery[index];
+
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.black26,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: data.photoUrl != ""
+                            ? Image.network(
+                                "${data.photoUrl}",
+                                fit: BoxFit.cover,
+                                height: 100,
+                              )
+                            : Image.asset(
+                                'assets/logo/noimage.png',
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
-                  ),
-                  title: Text('${controller.tempQuery[index]["name"]}'),
-                  subtitle: Text('${controller.tempQuery[index]["email"]}'),
-                  trailing: const Chip(
-                    label: Text('3'),
-                  ),
-                  onTap: () {
-                    authC.createNewChat(
-                      friendEmail: '${controller.tempQuery[index]["email"]}',
-                    );
-                  },
-                ),
+                    title: Text('${data.name}'),
+                    subtitle: Text('${data.email}'),
+                    onTap: () {
+                      authC.createNewChat(
+                        friendEmail: '${data.email}',
+                      );
+                    },
+                  );
+                },
               ),
       ),
     );
