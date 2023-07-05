@@ -127,7 +127,6 @@ class AuthController extends GetxController {
       final isSignIn = await _googleSignIn.isSignedIn();
       if (isSignIn) {
         LoadingUtils.fullScreen();
-
         final googleAuth = await _currentUser?.authentication;
 
         final credential = GoogleAuthProvider.credential(
@@ -153,22 +152,6 @@ class AuthController extends GetxController {
             "onlineStatus": 1,
           });
         } else {
-          // await users.doc(_userCredential?.user?.email).set({
-          //   "uid": _userCredential?.user?.uid,
-          //   "name": _userCredential?.user?.displayName,
-          //   "keyName": _userCredential?.user?.displayName
-          //       ?.substring(0, 1)
-          //       .toUpperCase(),
-          //   "email": _userCredential?.user?.email,
-          //   "photoUrl": _userCredential?.user?.photoURL ?? "",
-          //   "status": '',
-          //   "creationTime":
-          //       _userCredential?.user?.metadata.creationTime?.toIso8601String(),
-          //   "lastSignInTime": _userCredential?.user?.metadata.lastSignInTime
-          //       ?.toIso8601String(),
-          //   "updatedTime": DateTime.now().toIso8601String(),
-          // });
-
           await users.doc(_userCredential?.user?.email).set(
                 UsersModel(
                   uid: _userCredential?.user?.uid,
@@ -244,21 +227,32 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    CollectionReference users = firestore.collection('users');
-    await users.doc(_userCredential?.user?.email).update(
-      {
-        "lastOnline": DateTime.now().toIso8601String(),
-        "onlineStatus": 0,
-      },
-    );
+    try {
+      LoadingUtils.fullScreen();
+      CollectionReference users = firestore.collection('users');
+      await users.doc(_userCredential?.user?.email).update(
+        {
+          "lastOnline": DateTime.now().toIso8601String(),
+          "onlineStatus": 0,
+        },
+      );
 
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
 
-    Get.offAllNamed(Routes.LOGIN);
-    _userCredential = null;
-    usersModel(UsersModel());
-    usersModel.refresh();
+      Get.offAllNamed(Routes.LOGIN);
+
+      Future.delayed(
+        Duration.zero,
+        () {
+          _userCredential = null;
+          usersModel(UsersModel());
+          usersModel.refresh();
+        },
+      );
+    } catch (e) {
+      Get.back();
+    }
   }
 
   // PROFILE

@@ -19,7 +19,7 @@ class LoginView extends GetView<LoginController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
                 width: Get.width * 0.6,
                 height: Get.width * 0.6,
                 child: Lottie.asset('assets/lottie/login.json'),
