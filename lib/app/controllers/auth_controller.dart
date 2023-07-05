@@ -3,10 +3,8 @@ import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:chat_app/app/utils/loading_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -90,7 +88,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -102,7 +100,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -192,7 +190,7 @@ class AuthController extends GetxController {
                 ).toJson(),
               );
 
-          await users.doc(_userCredential?.user?.email).collection('chats');
+          users.doc(_userCredential?.user?.email).collection('chats');
         }
 
         final getUserFromFirestoreAgain =
@@ -214,7 +212,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -226,7 +224,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -405,7 +403,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -417,7 +415,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -453,7 +451,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -465,7 +463,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;

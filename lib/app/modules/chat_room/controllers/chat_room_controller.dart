@@ -34,7 +34,8 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  Stream<DocumentSnapshot<Object?>> streamFriend({required String friendEmail}) {
+  Stream<DocumentSnapshot<Object?>> streamFriend(
+      {required String friendEmail}) {
     CollectionReference users = firestore.collection("users");
 
     return users.doc(friendEmail).snapshots();
@@ -61,8 +62,8 @@ class ChatRoomController extends GetxController {
       CollectionReference chats = firestore.collection('chats');
       CollectionReference users = firestore.collection('users');
 
-      final send =
-          await chats.doc(chatId).collection('chat').add(chatModel.toJson());
+      // final send =
+      await chats.doc(chatId).collection('chat').add(chatModel.toJson());
 
       Timer(
         Duration.zero,

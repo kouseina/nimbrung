@@ -9,7 +9,9 @@ import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
-  var authC = Get.find<AuthController>();
+  HomeView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   Widget chat(
       {required UsersModel friendData,

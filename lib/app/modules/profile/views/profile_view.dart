@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  var authC = Get.find<AuthController>();
+  ProfileView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

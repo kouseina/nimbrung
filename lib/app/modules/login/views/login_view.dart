@@ -7,7 +7,9 @@ import 'package:lottie/lottie.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
-  var authController = Get.find<AuthController>();
+  LoginView({Key? key}) : super(key: key);
+
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

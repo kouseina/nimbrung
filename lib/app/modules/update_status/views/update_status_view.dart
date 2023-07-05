@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import '../controllers/update_status_controller.dart';
 
 class UpdateStatusView extends GetView<UpdateStatusController> {
-  var authC = Get.find<AuthController>();
+  UpdateStatusView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

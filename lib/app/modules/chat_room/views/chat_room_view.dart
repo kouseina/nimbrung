@@ -13,7 +13,9 @@ import 'package:intl/intl.dart';
 import '../controllers/chat_room_controller.dart';
 
 class ChatRoomView extends GetView<ChatRoomController> {
-  var authC = Get.find<AuthController>();
+  final authC = Get.find<AuthController>();
+
+  ChatRoomView({Key? key}) : super(key: key);
 
   Widget _titleAppbar({
     String? avatarPath,
@@ -334,9 +336,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
 }
 
 class ItemChatWidget extends StatelessWidget {
-  String text;
-  String time;
-  bool isSender;
+  final String text;
+  final String time;
+  final bool isSender;
 
   ItemChatWidget({
     Key? key,

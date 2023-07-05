@@ -1,14 +1,15 @@
 import 'package:chat_app/app/controllers/auth_controller.dart';
-import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../controllers/search_controller.dart' as searchController;
+import '../controllers/search_controller.dart' as search_controller;
 
-class SearchView extends GetView<searchController.SearchController> {
-  var authC = Get.find<AuthController>();
+class SearchView extends GetView<search_controller.SearchController> {
+  SearchView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
