@@ -100,7 +100,9 @@ class ProfileView extends GetView<ProfileController> {
                 'Ganti Tema',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              trailing: const Icon(Icons.light_mode_rounded),
+              trailing: Icon(Get.isDarkMode
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded),
               onTap: () {
                 Get.changeTheme(
                   Get.isDarkMode
