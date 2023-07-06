@@ -1,3 +1,4 @@
+import 'package:chat_app/app/themes/primary_theme.dart';
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:chat_app/app/utils/splash_screen.dart';
@@ -36,6 +37,8 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return Obx(
             () => GetMaterialApp(
+              theme: PrimaryTheme().lightTheme,
+              darkTheme: PrimaryTheme().darkTheme,
               debugShowCheckedModeBanner: false,
               title: 'Chat App',
               initialRoute: authC.isSkipIntro.isTrue

@@ -14,12 +14,18 @@ class SearchView extends GetView<search_controller.SearchController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(140),
         child: AppBar(
           backgroundColor: Colors.blue.shade400,
-          title: const Text('Cari Teman'),
+          iconTheme: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+          title: Text(
+            'Cari Teman',
+            style: Theme.of(context)
+                .appBarTheme
+                .titleTextStyle
+                ?.copyWith(color: Colors.white),
+          ),
           centerTitle: true,
           elevation: 1,
           flexibleSpace: Padding(
@@ -31,12 +37,16 @@ class SearchView extends GetView<search_controller.SearchController> {
                   data: value,
                   email: '${authC.usersModel.value.email}',
                 ),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.black54),
                 controller: controller.searchController.value,
                 decoration: InputDecoration(
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 13, horizontal: 15),
                   isDense: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).scaffoldBackgroundColor,
                   filled: true,
                   hintText: 'Cari teman baru disini...',
                   border: const OutlineInputBorder(

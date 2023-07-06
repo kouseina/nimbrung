@@ -23,6 +23,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
     String? name,
     int? onlineStatus,
     String? lastOnline,
+    required BuildContext context,
   }) {
     String getOnlineStatus() {
       if (onlineStatus == 1) {
@@ -55,13 +56,11 @@ class ChatRoomView extends GetView<ChatRoomController> {
           children: [
             Text(
               (name?.isNotEmpty ?? false) ? name ?? '' : 'Loading...',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey.shade800,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Text(
@@ -86,15 +85,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              leading: IconButton(
-                onPressed: () => Get.back(),
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.grey.shade800,
-                ),
-              ),
+              elevation: 0.2,
               title: StreamBuilder<DocumentSnapshot<Object?>>(
                 stream: controller.streamFriend(
                     friendEmail: Get.arguments["friendEmail"]),
@@ -110,11 +101,12 @@ class ChatRoomView extends GetView<ChatRoomController> {
                         name: dataModel.name,
                         onlineStatus: dataModel.onlineStatus,
                         lastOnline: dataModel.lastOnline,
+                        context: context,
                       );
                     } catch (e) {}
                   }
 
-                  return _titleAppbar();
+                  return _titleAppbar(context: context);
                 },
               )),
         ),
@@ -210,9 +202,8 @@ class ChatRoomView extends GetView<ChatRoomController> {
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor),
                 child: Row(
                   children: [
                     Expanded(
@@ -227,7 +218,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                             left: 15,
                           ),
                           isDense: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: Colors.grey.shade800,
                           filled: true,
                           hintText: 'Ketik pesan...',
                           border: const OutlineInputBorder(
