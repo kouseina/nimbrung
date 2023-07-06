@@ -218,7 +218,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
                             left: 15,
                           ),
                           isDense: true,
-                          fillColor: Colors.grey.shade800,
+                          fillColor: Get.isDarkMode
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                           filled: true,
                           hintText: 'Ketik pesan...',
                           border: const OutlineInputBorder(
