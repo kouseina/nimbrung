@@ -1,12 +1,12 @@
 import 'package:chat_app/app/data/models/users_model.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
+import 'package:chat_app/app/storages/shared_prefs.dart';
 import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:chat_app/app/utils/loading_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -36,7 +36,7 @@ class AuthController extends GetxController {
   }
 
   Future<bool> skipIntro() async {
-    final skipIntroStorage = GetStorage().read('skipIntro');
+    final skipIntroStorage = SharedPrefs().isSkipIntro;
     if (skipIntroStorage != null && skipIntroStorage == true) {
       return true;
     }
@@ -139,7 +139,7 @@ class AuthController extends GetxController {
             .then((value) => _userCredential = value);
 
         // write skipintro to local storage
-        GetStorage().write('skipIntro', true);
+        SharedPrefs().isSkipIntro = true;
 
         CollectionReference users = firestore.collection('users');
         final getUserFromFirestore =

@@ -1,3 +1,4 @@
+import 'package:chat_app/app/storages/shared_prefs.dart';
 import 'package:chat_app/app/themes/primary_theme.dart';
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
@@ -6,14 +7,18 @@ import 'package:chat_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await GetStorage.init();
+  await SharedPrefs().init();
+
+  Get.changeTheme(SharedPrefs().isDark == true
+      ? PrimaryTheme().darkTheme
+      : PrimaryTheme().lightTheme);
+
   runApp(MyApp());
 }
 

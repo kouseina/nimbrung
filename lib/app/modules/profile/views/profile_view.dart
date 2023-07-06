@@ -1,5 +1,4 @@
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:chat_app/app/themes/primary_theme.dart';
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -103,13 +102,7 @@ class ProfileView extends GetView<ProfileController> {
               trailing: Icon(Get.isDarkMode
                   ? Icons.light_mode_rounded
                   : Icons.dark_mode_rounded),
-              onTap: () {
-                Get.changeTheme(
-                  Get.isDarkMode
-                      ? PrimaryTheme().lightTheme
-                      : PrimaryTheme().darkTheme,
-                );
-              },
+              onTap: () => controller.changeTheme(),
             ),
             const Spacer(),
             Padding(
