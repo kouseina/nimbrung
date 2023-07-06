@@ -132,8 +132,8 @@ class ProfileView extends GetView<ProfileController> {
               padding: EdgeInsets.only(bottom: context.mediaQueryPadding.top),
               child: Column(
                 children: [
-                  Text('ChatApp'),
-                  Text('v1.0'),
+                  Text('Nimbrung'),
+                  Text(controller.appVersion.value),
                 ],
               ),
             ),
