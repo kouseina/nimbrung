@@ -8,22 +8,15 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  var authC = Get.find<AuthController>();
+  ProfileView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.grey.shade800,
-          ),
-        ),
         actions: [
           IconButton(
             onPressed: () => authC.logout(),
@@ -42,13 +35,13 @@ class ProfileView extends GetView<ProfileController> {
             ),
             AvatarGlow(
               endRadius: 110,
-              glowColor: Colors.black12,
-              duration: Duration(seconds: 2),
+              glowColor: Get.isDarkMode ? Colors.white12 : Colors.black12,
+              duration: const Duration(seconds: 2),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(200),
                 child: CircleAvatar(
                   radius: 80,
-                  backgroundColor: Colors.black26,
+                  backgroundColor: Colors.white54,
                   child: (authC.usersModel.value.photoUrl != "")
                       ? Image.network(
                           "${authC.usersModel.value.photoUrl}",
@@ -67,11 +60,7 @@ class ProfileView extends GetView<ProfileController> {
             ),
             Text(
               '${authC.usersModel.value.name}',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.black87,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(
               height: 8,
@@ -80,58 +69,48 @@ class ProfileView extends GetView<ProfileController> {
               '${authC.usersModel.value.email}',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.black45,
+                color: Get.isDarkMode ? Colors.white54 : Colors.black45,
               ),
             ),
             const SizedBox(
               height: 30,
             ),
             ListTile(
-              leading: Icon(Icons.edit),
-              title: const Text(
+              leading: const Icon(Icons.edit),
+              title: Text(
                 'Ubah Status',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
-              trailing: Icon(Icons.arrow_right),
+              trailing: const Icon(Icons.arrow_right),
               onTap: () => Get.toNamed(Routes.UPDATE_STATUS),
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: const Text(
+              leading: const Icon(Icons.person),
+              title: Text(
                 'Ubah Profil',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
-              trailing: Icon(Icons.arrow_right),
+              trailing: const Icon(Icons.arrow_right),
               onTap: () => Get.toNamed(Routes.UPDATE_PROFILE),
             ),
             ListTile(
-              leading: Icon(Icons.color_lens),
-              title: const Text(
+              leading: const Icon(Icons.color_lens),
+              title: Text(
                 'Ganti Tema',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
-              trailing: Icon(Icons.light_mode_rounded),
-              onTap: () {},
+              trailing: Icon(Get.isDarkMode
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded),
+              onTap: () => controller.changeTheme(),
             ),
             const Spacer(),
             Padding(
               padding: EdgeInsets.only(bottom: context.mediaQueryPadding.top),
               child: Column(
                 children: [
-                  Text('ChatApp'),
-                  Text('v1.0'),
+                  const Text('Nimbrung'),
+                  Text(controller.appVersion.value),
                 ],
               ),
             ),

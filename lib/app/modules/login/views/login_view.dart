@@ -7,7 +7,9 @@ import 'package:lottie/lottie.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
-  var authController = Get.find<AuthController>();
+  LoginView({Key? key}) : super(key: key);
+
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class LoginView extends GetView<LoginController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
                 width: Get.width * 0.6,
                 height: Get.width * 0.6,
                 child: Lottie.asset('assets/lottie/login.json'),

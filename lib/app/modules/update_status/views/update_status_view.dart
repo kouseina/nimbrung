@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import '../controllers/update_status_controller.dart';
 
 class UpdateStatusView extends GetView<UpdateStatusController> {
-  var authC = Get.find<AuthController>();
+  UpdateStatusView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -16,21 +18,14 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
-            color: Colors.grey.shade800,
           ),
         ),
-        title: Text(
+        title: const Text(
           'Ubah Status',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.grey.shade800,
-            fontWeight: FontWeight.w600,
-          ),
         ),
         centerTitle: true,
       ),
@@ -56,7 +51,7 @@ class UpdateStatusView extends GetView<UpdateStatusController> {
                 width: Get.width,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     elevation: 0,
                   ),
                   onPressed: () {

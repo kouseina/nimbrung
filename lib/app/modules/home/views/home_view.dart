@@ -9,7 +9,9 @@ import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
-  var authC = Get.find<AuthController>();
+  HomeView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   Widget chat(
       {required UsersModel friendData,
@@ -51,17 +53,18 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Column(
         children: [
           Container(
             margin: EdgeInsets.only(top: context.mediaQueryPadding.top),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.shade200,
+                  color: Get.isDarkMode
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade200,
                   blurRadius: 5,
                   blurStyle: BlurStyle.normal,
                 ),
@@ -70,12 +73,12 @@ class HomeView extends GetView<HomeController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Nimbrung',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 20),
                 ),
                 InkWell(
                   onTap: () => Get.toNamed(Routes.PROFILE),
@@ -148,7 +151,10 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(Routes.SEARCH),
         backgroundColor: Colors.blue.shade400,
-        child: const Icon(Icons.message_rounded),
+        child: const Icon(
+          Icons.message_rounded,
+          color: Colors.white,
+        ),
       ),
     );
   }

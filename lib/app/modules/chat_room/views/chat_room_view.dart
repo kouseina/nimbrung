@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:chat_app/app/controllers/auth_controller.dart';
 import 'package:chat_app/app/data/models/chats_model.dart';
+import 'package:chat_app/app/data/models/users_model.dart';
+import 'package:chat_app/app/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,25 @@ import 'package:intl/intl.dart';
 import '../controllers/chat_room_controller.dart';
 
 class ChatRoomView extends GetView<ChatRoomController> {
-  var authC = Get.find<AuthController>();
+  final authC = Get.find<AuthController>();
 
-  Widget _titleAppbar({String? avatarPath, String? name, String? status}) {
+  ChatRoomView({Key? key}) : super(key: key);
+
+  Widget _titleAppbar({
+    String? avatarPath,
+    String? name,
+    int? onlineStatus,
+    String? lastOnline,
+    required BuildContext context,
+  }) {
+    String getOnlineStatus() {
+      if (onlineStatus == 1) {
+        return 'Online';
+      }
+
+      return "Terakhir dilihat ${Utils().dateCustomFormat(lastOnline ?? '')}";
+    }
+
     return Row(
       children: [
         CircleAvatar(
@@ -38,16 +56,17 @@ class ChatRoomView extends GetView<ChatRoomController> {
           children: [
             Text(
               (name?.isNotEmpty ?? false) ? name ?? '' : 'Loading...',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey.shade800,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const SizedBox(
+              height: 4,
             ),
             Text(
-              (status?.isNotEmpty ?? false) ? status ?? '' : 'Loading...',
+              getOnlineStatus(),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 color: Colors.grey.shade500,
                 fontWeight: FontWeight.normal,
               ),
@@ -66,28 +85,28 @@ class ChatRoomView extends GetView<ChatRoomController> {
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
           child: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              leading: IconButton(
-                onPressed: () => Get.back(),
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.grey.shade800,
-                ),
-              ),
+              elevation: 0.2,
               title: StreamBuilder<DocumentSnapshot<Object?>>(
                 stream: controller.streamFriend(
                     friendEmail: Get.arguments["friendEmail"]),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.active) {
-                    Map data = snapshot.data?.data() as Map;
-                    return _titleAppbar(
-                      avatarPath: data["photoUrl"],
-                      name: data["name"],
-                      status: data["status"],
-                    );
+                    var data = snapshot.data?.data() as Map<String, dynamic>;
+
+                    try {
+                      var dataModel = UsersModel.fromJson(data);
+
+                      return _titleAppbar(
+                        avatarPath: dataModel.photoUrl,
+                        name: dataModel.name,
+                        onlineStatus: dataModel.onlineStatus,
+                        lastOnline: dataModel.lastOnline,
+                        context: context,
+                      );
+                    } catch (e) {}
                   }
-                  return _titleAppbar();
+
+                  return _titleAppbar(context: context);
                 },
               )),
         ),
@@ -183,9 +202,8 @@ class ChatRoomView extends GetView<ChatRoomController> {
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor),
                 child: Row(
                   children: [
                     Expanded(
@@ -200,7 +218,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
                             left: 15,
                           ),
                           isDense: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: Get.isDarkMode
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                           filled: true,
                           hintText: 'Ketik pesan...',
                           border: const OutlineInputBorder(
@@ -305,9 +325,9 @@ class ChatRoomView extends GetView<ChatRoomController> {
 }
 
 class ItemChatWidget extends StatelessWidget {
-  String text;
-  String time;
-  bool isSender;
+  final String text;
+  final String time;
+  final bool isSender;
 
   ItemChatWidget({
     Key? key,
@@ -318,8 +338,7 @@ class ItemChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat _formatter = DateFormat('Hm');
-    final String dateFormated = _formatter.format(
+    final String dateFormated = DateFormat.Hm().format(
       DateTime.tryParse(time) ?? DateTime.now(),
     );
 

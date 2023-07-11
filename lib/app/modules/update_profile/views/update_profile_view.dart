@@ -9,13 +9,15 @@ import 'package:get/get.dart';
 import '../controllers/update_profile_controller.dart';
 
 class UpdateProfileView extends GetView<UpdateProfileController> {
-  var authC = Get.find<AuthController>();
+  UpdateProfileView({Key? key}) : super(key: key);
 
-  Widget _avatar() {
+  final authC = Get.find<AuthController>();
+
+  Widget _avatar(BuildContext context) {
     return GetBuilder<UpdateProfileController>(
       init: UpdateProfileController(),
       initState: (_) {},
-      builder: (_controller) {
+      builder: (controller) {
         return Center(
           child: Column(
             children: [
@@ -27,13 +29,14 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   children: [
                     AvatarGlow(
                       endRadius: 110,
-                      glowColor: Colors.black12,
+                      glowColor:
+                          Get.isDarkMode ? Colors.white12 : Colors.black12,
                       duration: const Duration(seconds: 2),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(200),
                         child: CircleAvatar(
                           radius: 80,
-                          backgroundColor: Colors.black26,
+                          backgroundColor: Colors.white54,
                           child: Stack(
                             alignment: AlignmentDirectional.center,
                             children: [
@@ -76,9 +79,13 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                         height: 50,
                         width: 50,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey.shade100),
+                          border: Border.all(
+                            color: Get.isDarkMode
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade100,
+                          ),
                         ),
                         child: const Icon(
                           Icons.edit,
@@ -128,25 +135,15 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
-            color: Colors.grey.shade800,
           ),
         ),
-        title: Text(
-          'Ubah Profil',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.grey.shade800,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text('Ubah Profil'),
         centerTitle: true,
       ),
       body: Padding(
@@ -156,18 +153,11 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             Expanded(
               child: ListView(
                 children: [
-                  _avatar(),
+                  _avatar(context),
                   const SizedBox(
                     height: 25,
                   ),
-                  const Text(
-                    'Email',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  Text('Email', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(
                     height: 10,
                   ),
@@ -186,14 +176,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                   const SizedBox(
                     height: 15,
                   ),
-                  const Text(
-                    'Nama',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  Text('Nama', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(
                     height: 10,
                   ),

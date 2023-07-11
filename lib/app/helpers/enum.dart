@@ -1,0 +1,4 @@
+enum OnlineStatusKey {
+  offline,
+  online,
+}

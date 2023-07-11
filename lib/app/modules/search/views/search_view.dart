@@ -1,24 +1,31 @@
 import 'package:chat_app/app/controllers/auth_controller.dart';
-import 'package:chat_app/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../controllers/search_controller.dart' as searchController;
+import '../controllers/search_controller.dart' as search_controller;
 
-class SearchView extends GetView<searchController.SearchController> {
-  var authC = Get.find<AuthController>();
+class SearchView extends GetView<search_controller.SearchController> {
+  SearchView({Key? key}) : super(key: key);
+
+  final authC = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(140),
         child: AppBar(
           backgroundColor: Colors.blue.shade400,
-          title: const Text('Cari Teman'),
+          iconTheme: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+          title: Text(
+            'Cari Teman',
+            style: Theme.of(context)
+                .appBarTheme
+                .titleTextStyle
+                ?.copyWith(color: Colors.white),
+          ),
           centerTitle: true,
           elevation: 1,
           flexibleSpace: Padding(
@@ -30,12 +37,16 @@ class SearchView extends GetView<searchController.SearchController> {
                   data: value,
                   email: '${authC.usersModel.value.email}',
                 ),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.black54),
                 controller: controller.searchController.value,
                 decoration: InputDecoration(
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 13, horizontal: 15),
                   isDense: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).scaffoldBackgroundColor,
                   filled: true,
                   hintText: 'Cari teman baru disini...',
                   border: const OutlineInputBorder(
@@ -69,35 +80,36 @@ class SearchView extends GetView<searchController.SearchController> {
             : ListView.builder(
                 padding: const EdgeInsets.only(top: 10),
                 itemCount: controller.tempQuery.length,
-                itemBuilder: (context, index) => ListTile(
-                  leading: CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Colors.black26,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: controller.tempQuery[index]["PhotoUrl"] != ""
-                          ? Image.network(
-                              "${controller.tempQuery[index]["photoUrl"]}",
-                              fit: BoxFit.cover,
-                              height: 100,
-                            )
-                          : Image.asset(
-                              'assets/logo/noimage.png',
-                              fit: BoxFit.cover,
-                            ),
+                itemBuilder: (context, index) {
+                  var data = controller.tempQuery[index];
+
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.black26,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: data.photoUrl != ""
+                            ? Image.network(
+                                "${data.photoUrl}",
+                                fit: BoxFit.cover,
+                                height: 100,
+                              )
+                            : Image.asset(
+                                'assets/logo/noimage.png',
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
-                  ),
-                  title: Text('${controller.tempQuery[index]["name"]}'),
-                  subtitle: Text('${controller.tempQuery[index]["email"]}'),
-                  trailing: const Chip(
-                    label: Text('3'),
-                  ),
-                  onTap: () {
-                    authC.createNewChat(
-                      friendEmail: '${controller.tempQuery[index]["email"]}',
-                    );
-                  },
-                ),
+                    title: Text('${data.name}'),
+                    subtitle: Text('${data.email}'),
+                    onTap: () {
+                      authC.createNewChat(
+                        friendEmail: '${data.email}',
+                      );
+                    },
+                  );
+                },
               ),
       ),
     );

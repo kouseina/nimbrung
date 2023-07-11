@@ -20,6 +20,9 @@ class UsersModel {
     this.photoUrl,
     this.status,
     this.updatedTime,
+    this.onlineStatus,
+    this.lastOnline,
+    this.fcmToken,
     this.chats,
   });
 
@@ -32,6 +35,9 @@ class UsersModel {
   String? photoUrl;
   String? status;
   String? updatedTime;
+  int? onlineStatus;
+  String? lastOnline;
+  String? fcmToken;
   List<ChatUser>? chats;
 
   factory UsersModel.fromJson(Map<String, dynamic> json) => UsersModel(
@@ -43,6 +49,9 @@ class UsersModel {
         lastSignInTime: json["lastSignInTime"],
         photoUrl: json["photoUrl"],
         status: json["status"],
+        onlineStatus: json["onlineStatus"],
+        lastOnline: json["lastOnline"],
+        fcmToken: json["fcmToken"],
         updatedTime: json["updatedTime"],
       );
 
@@ -55,6 +64,9 @@ class UsersModel {
         "lastSignInTime": lastSignInTime,
         "photoUrl": photoUrl,
         "status": status,
+        "onlineStatus": onlineStatus,
+        "lastOnline": lastOnline,
+        "fcmToken": fcmToken,
         "updatedTime": updatedTime,
       };
 }

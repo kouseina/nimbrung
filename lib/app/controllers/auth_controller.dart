@@ -1,14 +1,13 @@
 import 'package:chat_app/app/data/models/users_model.dart';
 import 'package:chat_app/app/routes/app_pages.dart';
+import 'package:chat_app/app/storages/shared_prefs.dart';
 import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:chat_app/app/utils/loading_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -38,7 +37,7 @@ class AuthController extends GetxController {
   }
 
   Future<bool> skipIntro() async {
-    final skipIntroStorage = GetStorage().read('skipIntro');
+    final skipIntroStorage = SharedPrefs().isSkipIntro;
     if (skipIntroStorage != null && skipIntroStorage == true) {
       return true;
     }
@@ -67,6 +66,7 @@ class AuthController extends GetxController {
         users.doc(_userCredential?.user?.email).update({
           "lastSignInTime":
               _userCredential?.user?.metadata.lastSignInTime?.toIso8601String(),
+          "onlineStatus": 1,
         });
 
         final getUserFromFirestore =
@@ -89,7 +89,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -101,7 +101,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -112,6 +112,9 @@ class AuthController extends GetxController {
 
         return true;
       }
+
+      updateFcmToken(fcmToken: '');
+
       return false;
     } catch (err) {
       return false;
@@ -128,7 +131,6 @@ class AuthController extends GetxController {
       final isSignIn = await _googleSignIn.isSignedIn();
       if (isSignIn) {
         LoadingUtils.fullScreen();
-
         final googleAuth = await _currentUser?.authentication;
 
         final credential = GoogleAuthProvider.credential(
@@ -141,7 +143,7 @@ class AuthController extends GetxController {
             .then((value) => _userCredential = value);
 
         // write skipintro to local storage
-        GetStorage().write('skipIntro', true);
+        SharedPrefs().isSkipIntro = true;
 
         CollectionReference users = firestore.collection('users');
         final getUserFromFirestore =
@@ -151,25 +153,29 @@ class AuthController extends GetxController {
           await users.doc(_userCredential?.user?.email).update({
             "lastSignInTime": _userCredential?.user?.metadata.lastSignInTime
                 ?.toIso8601String(),
+            "onlineStatus": 1,
           });
         } else {
-          await users.doc(_userCredential?.user?.email).set({
-            "uid": _userCredential?.user?.uid,
-            "name": _userCredential?.user?.displayName,
-            "keyName": _userCredential?.user?.displayName
-                ?.substring(0, 1)
-                .toUpperCase(),
-            "email": _userCredential?.user?.email,
-            "photoUrl": _userCredential?.user?.photoURL ?? "",
-            "status": '',
-            "creationTime":
-                _userCredential?.user?.metadata.creationTime?.toIso8601String(),
-            "lastSignInTime": _userCredential?.user?.metadata.lastSignInTime
-                ?.toIso8601String(),
-            "updatedTime": DateTime.now().toIso8601String(),
-          });
-
-          await users.doc(_userCredential?.user?.email).collection('chats');
+          await users.doc(_userCredential?.user?.email).set(
+                UsersModel(
+                  uid: _userCredential?.user?.uid,
+                  name: _userCredential?.user?.displayName,
+                  keyName: _userCredential?.user?.displayName
+                      ?.substring(0, 1)
+                      .toUpperCase(),
+                  email: _userCredential?.user?.email,
+                  photoUrl: _userCredential?.user?.photoURL ?? "",
+                  status: '',
+                  onlineStatus: 1,
+                  creationTime: _userCredential?.user?.metadata.creationTime
+                      ?.toIso8601String(),
+                  lastSignInTime: _userCredential?.user?.metadata.lastSignInTime
+                      ?.toIso8601String(),
+                  lastOnline: _userCredential?.user?.metadata.lastSignInTime
+                      ?.toIso8601String(),
+                  updatedTime: DateTime.now().toIso8601String(),
+                ).toJson(),
+              );
         }
 
         final getUserFromFirestoreAgain =
@@ -191,7 +197,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -203,7 +209,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -211,6 +217,8 @@ class AuthController extends GetxController {
         }
 
         usersModel.refresh();
+
+        updateFcmToken();
 
         isAuth.value = true;
         DialogUtils.toast('Berhasil masuk!');
@@ -223,9 +231,52 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
-    Get.offAllNamed(Routes.LOGIN);
+    try {
+      LoadingUtils.fullScreen();
+      CollectionReference users = firestore.collection('users');
+      await users.doc(_userCredential?.user?.email).update(
+        {
+          "lastOnline": DateTime.now().toIso8601String(),
+          "onlineStatus": 0,
+        },
+      );
+
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
+
+      await updateFcmToken(fcmToken: '');
+
+      Get.offAllNamed(Routes.LOGIN);
+
+      Future.delayed(
+        Duration.zero,
+        () {
+          _userCredential = null;
+          usersModel(UsersModel());
+          usersModel.refresh();
+        },
+      );
+    } catch (e) {
+      Get.back();
+    }
+  }
+
+  Future<void> updateFcmToken({String? fcmToken}) async {
+    fcmToken ??= await FirebaseMessaging.instance.getToken();
+
+    debugPrint('fcmToken : $fcmToken');
+
+    CollectionReference users = firestore.collection('users');
+
+    await users.doc(_userCredential?.user?.email).update({
+      "fcmToken": fcmToken,
+    }).then((value) {
+      usersModel.update((val) {
+        val?.fcmToken = fcmToken;
+      });
+
+      usersModel.refresh();
+    });
   }
 
   // PROFILE
@@ -370,7 +421,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -382,7 +433,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
@@ -418,7 +469,7 @@ class AuthController extends GetxController {
         if (listChats.docs.isNotEmpty) {
           List<ChatUser> listChatUser = <ChatUser>[];
 
-          listChats.docs.forEach((element) {
+          for (var element in listChats.docs) {
             Map<String, dynamic> chatUserData = element.data();
             String chatUserId = element.id;
 
@@ -430,7 +481,7 @@ class AuthController extends GetxController {
                 totalUnread: chatUserData["total_unread"],
               ),
             );
-          });
+          }
 
           usersModel.update((val) {
             val?.chats = listChatUser;
