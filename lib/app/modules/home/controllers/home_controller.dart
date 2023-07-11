@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeController extends FullLifeCycleController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  var authController = Get.find<AuthController>();
 
   @override
   void onInit() async {
@@ -22,7 +23,6 @@ class HomeController extends FullLifeCycleController {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    var authController = Get.find<AuthController>();
     // TODO: implement didChangeAppLifecycleState
     super.didChangeAppLifecycleState(state);
 
@@ -108,12 +108,12 @@ class HomeController extends FullLifeCycleController {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      debugPrint('User granted permission');
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      print('User granted provisional permission');
+      debugPrint('User granted provisional permission');
     } else {
-      print('User decline or has not accpet permission');
+      debugPrint('User decline or has not accpet permission');
     }
   }
 
@@ -132,8 +132,8 @@ class HomeController extends FullLifeCycleController {
     // Also handle any interaction when the app is in the background via a
     // Stream listener
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+      debugPrint('Got a message whilst in the foreground!');
+      debugPrint('Message data: ${message.data}');
 
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -161,19 +161,17 @@ class HomeController extends FullLifeCycleController {
 
   void _handleMessage(RemoteMessage message) {
     if (message.data['type'] == 'chat') {
-      print('get message from fcm : ${message.data}');
+      debugPrint('get message from fcm : ${message.data}');
     }
   }
 
   void tokenSetting() async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    print('fcmToken : $fcmToken');
-
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       // TODO: If necessary send token to application server.
 
       // Note: This callback is fired at each app startup and whenever a new
       // token is generated.
+      authController.updateFcmToken(fcmToken: fcmToken);
     }).onError((err) {
       // Error getting token.
     });

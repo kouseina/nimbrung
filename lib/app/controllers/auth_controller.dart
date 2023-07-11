@@ -4,6 +4,7 @@ import 'package:chat_app/app/storages/shared_prefs.dart';
 import 'package:chat_app/app/utils/dialog_utils.dart';
 import 'package:chat_app/app/utils/loading_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -111,6 +112,9 @@ class AuthController extends GetxController {
 
         return true;
       }
+
+      updateFcmToken(fcmToken: '');
+
       return false;
     } catch (err) {
       return false;
@@ -172,8 +176,6 @@ class AuthController extends GetxController {
                   updatedTime: DateTime.now().toIso8601String(),
                 ).toJson(),
               );
-
-          users.doc(_userCredential?.user?.email).collection('chats');
         }
 
         final getUserFromFirestoreAgain =
@@ -216,6 +218,8 @@ class AuthController extends GetxController {
 
         usersModel.refresh();
 
+        updateFcmToken();
+
         isAuth.value = true;
         DialogUtils.toast('Berhasil masuk!');
         Get.offAllNamed(Routes.HOME);
@@ -240,6 +244,8 @@ class AuthController extends GetxController {
       await _googleSignIn.disconnect();
       await _googleSignIn.signOut();
 
+      await updateFcmToken(fcmToken: '');
+
       Get.offAllNamed(Routes.LOGIN);
 
       Future.delayed(
@@ -253,6 +259,24 @@ class AuthController extends GetxController {
     } catch (e) {
       Get.back();
     }
+  }
+
+  Future<void> updateFcmToken({String? fcmToken}) async {
+    fcmToken ??= await FirebaseMessaging.instance.getToken();
+
+    debugPrint('fcmToken : $fcmToken');
+
+    CollectionReference users = firestore.collection('users');
+
+    await users.doc(_userCredential?.user?.email).update({
+      "fcmToken": fcmToken,
+    }).then((value) {
+      usersModel.update((val) {
+        val?.fcmToken = fcmToken;
+      });
+
+      usersModel.refresh();
+    });
   }
 
   // PROFILE
