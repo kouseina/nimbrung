@@ -18,6 +18,7 @@ Chat application with Flutter + Firebase
 3. Profile
 4. Online Status
 5. Dark Mode
+6. Push Notification
 
 ## Tools Version
 
